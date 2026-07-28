@@ -1,0 +1,1744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="description" content="Philmed connects patients in Kenya to trusted general doctors and 12 medical specialties. Book a consultation online in minutes — in-person or by video."/>
+<meta name="theme-color" content="#0B1F3A"/>
+<title>Philmed — Your Health, Our Priority</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230B1F3A'/%3E%3Cpath d='M50 22v56M22 50h56' stroke='%2300B4A6' stroke-width='14' stroke-linecap='round'/%3E%3C/svg%3E"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #0B1F3A;
+    --navy-mid: #163259;
+    --teal: #00B4A6;
+    --teal-light: #E0F7F5;
+    --teal-dark: #007A70;
+    --gold: #F5A623;
+    --gold-light: #FEF3DC;
+    --white: #FFFFFF;
+    --off-white: #F8FAFB;
+    --gray-100: #F1F5F9;
+    --gray-200: #E2E8F0;
+    --gray-400: #94A3B8;
+    --gray-600: #475569;
+    --gray-800: #1E293B;
+    --text: #1E293B;
+    --radius: 12px;
+    --radius-lg: 20px;
+    --shadow: 0 4px 24px rgba(11,31,58,0.10);
+    --shadow-lg: 0 12px 48px rgba(11,31,58,0.16);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    background: var(--white);
+    line-height: 1.65;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
+
+  /* ── NAVBAR ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 4%;
+    background: transparent;
+    transition: background 0.3s, box-shadow 0.3s;
+  }
+  nav.scrolled { background: var(--navy); box-shadow: var(--shadow); }
+
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: -0.5px;
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--teal); }
+
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a {
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    font-size: 0.92rem;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--teal); }
+
+  .nav-account { display: flex; align-items: center; gap: 0.9rem; margin-right: 0.5rem; }
+  .nav-account-btn {
+    background: none; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem; font-weight: 600; color: var(--navy);
+  }
+  .nav-hi { font-size: 0.88rem; color: var(--gray-600); font-weight: 500; }
+  .nav-account-link {
+    font-size: 0.85rem; font-weight: 600; color: var(--teal-dark); text-decoration: none;
+  }
+  .nav-account-link:hover { text-decoration: underline; }
+
+  .form-api-error {
+    display: none; background: #FDECEA; color: #B3261E; border: 1px solid #F5C6C2;
+    border-radius: var(--radius); padding: 0.75rem 1rem; font-size: 0.85rem; margin-bottom: 1.25rem;
+  }
+
+  .account-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+  .tab-btn {
+    flex: 1; padding: 0.65rem; border: 1.5px solid var(--gray-200); background: var(--off-white);
+    border-radius: var(--radius); cursor: pointer; font-family: 'DM Sans', sans-serif;
+    font-weight: 600; font-size: 0.9rem; color: var(--gray-600);
+  }
+  .tab-btn.active { border-color: var(--teal); background: var(--teal-light); color: var(--teal-dark); }
+
+  .appt-row {
+    display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+    padding: 1rem; border: 1px solid var(--gray-200); border-radius: var(--radius); margin-bottom: 0.75rem;
+  }
+  .appt-status {
+    font-size: 0.72rem; font-weight: 700; padding: 0.3rem 0.7rem; border-radius: 50px; white-space: nowrap;
+  }
+  .appt-status-pending { background: #FFF4E0; color: #9A6700; }
+  .appt-status-confirmed { background: var(--teal-light); color: var(--teal-dark); }
+  .appt-status-cancelled { background: #FDECEA; color: #B3261E; }
+  .appt-status-completed { background: #E8EAF0; color: var(--navy); }
+
+  .btn-nav {
+    background: var(--teal);
+    color: var(--white);
+    border: none;
+    border-radius: 50px;
+    padding: 0.6rem 1.5rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .btn-nav:hover { background: var(--teal-dark); transform: translateY(-1px); }
+
+  .nav-toggle { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+  .nav-toggle span { display: block; width: 24px; height: 2px; background: var(--white); border-radius: 2px; transition: 0.3s; }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 60%, #1a4a7a 100%);
+    display: flex; align-items: center; justify-content: center;
+    text-align: center;
+    padding: 8rem 4% 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  #hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 20% 80%, rgba(0,180,166,0.15) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 80% 20%, rgba(245,166,35,0.10) 0%, transparent 60%);
+  }
+  .hero-content { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: rgba(0,180,166,0.15);
+    border: 1px solid rgba(0,180,166,0.3);
+    color: var(--teal);
+    font-size: 0.85rem; font-weight: 600;
+    padding: 0.4rem 1rem;
+    border-radius: 50px;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.5px;
+    animation: fadeUp 0.6s ease both;
+  }
+  .badge-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--teal); animation: pulse 2s infinite; }
+
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.3)} }
+
+  .hero-title {
+    font-size: clamp(2.4rem, 5vw, 3.8rem);
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.15;
+    margin-bottom: 1.2rem;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+  .hero-title em { color: var(--teal); font-style: normal; }
+
+  .hero-sub {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.72);
+    max-width: 560px;
+    margin: 0 auto 2.5rem;
+    font-weight: 300;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+
+  .hero-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; animation: fadeUp 0.6s 0.3s ease both; }
+
+  .btn-primary {
+    background: var(--teal);
+    color: var(--white);
+    border: none; border-radius: 50px;
+    padding: 0.85rem 2rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem; font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 4px 20px rgba(0,180,166,0.35);
+  }
+  .btn-primary:hover { background: var(--teal-dark); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,180,166,0.45); }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--white);
+    border: 1.5px solid rgba(255,255,255,0.4);
+    border-radius: 50px;
+    padding: 0.85rem 2rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem; font-weight: 500;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, transform 0.15s;
+  }
+  .btn-outline:hover { border-color: var(--white); background: rgba(255,255,255,0.08); transform: translateY(-2px); }
+
+  .hero-stats {
+    display: flex; justify-content: center; gap: 3rem;
+    margin-top: 4rem;
+    animation: fadeUp 0.6s 0.4s ease both;
+  }
+  .stat { text-align: center; }
+  .stat-num { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: var(--white); }
+  .stat-label { font-size: 0.8rem; color: rgba(255,255,255,0.55); font-weight: 400; margin-top: 2px; }
+
+  @keyframes fadeUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+
+  /* ── SECTIONS COMMON ── */
+  section { padding: 6rem 4%; }
+  .section-label {
+    display: inline-block;
+    background: var(--teal-light);
+    color: var(--teal-dark);
+    font-size: 0.78rem; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    padding: 0.35rem 1rem; border-radius: 50px;
+    margin-bottom: 1rem;
+  }
+  .section-title {
+    font-size: clamp(1.8rem, 3vw, 2.6rem);
+    font-weight: 700; color: var(--navy);
+    margin-bottom: 0.75rem; line-height: 1.25;
+  }
+  .section-sub { font-size: 1rem; color: var(--gray-600); max-width: 520px; font-weight: 300; }
+  .section-head { text-align: center; margin-bottom: 3.5rem; }
+  .section-head .section-sub { margin: 0 auto; }
+
+  /* ── HOW IT WORKS ── */
+  #how { background: var(--off-white); }
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2rem; max-width: 900px; margin: 0 auto; }
+  .step-card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    text-align: center;
+    box-shadow: var(--shadow);
+    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .step-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+  .step-num {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1.2rem;
+  }
+  .step-card h3 { font-size: 1.1rem; color: var(--navy); margin-bottom: 0.5rem; }
+  .step-card p { font-size: 0.9rem; color: var(--gray-600); }
+
+  /* ── GENERAL DOCTOR ── */
+  #general { background: var(--white); }
+  .general-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+  }
+  .general-img {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+    border-radius: var(--radius-lg);
+    height: 400px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .general-img::after {
+    content: '🩺';
+    font-size: 8rem;
+    opacity: 0.25;
+    position: absolute;
+    bottom: 1rem; right: 1.5rem;
+  }
+  .general-icon-wrap {
+    width: 120px; height: 120px; border-radius: 50%;
+    background: rgba(0,180,166,0.18);
+    border: 2px solid rgba(0,180,166,0.4);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3.5rem;
+  }
+  .general-text .perks { list-style: none; margin: 1.5rem 0 2rem; display: flex; flex-direction: column; gap: 0.75rem; }
+  .perk { display: flex; align-items: center; gap: 0.75rem; font-size: 0.95rem; color: var(--gray-600); }
+  .perk-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); flex-shrink: 0; }
+
+  /* ── SPECIALISTS ── */
+  #specialists { background: var(--off-white); }
+  .specialists-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+    max-width: 1100px; margin: 0 auto;
+  }
+
+  .spec-card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    padding: 1.75rem 1.25rem;
+    text-align: center;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+    border: 1.5px solid transparent;
+    position: relative; overflow: hidden;
+  }
+  .spec-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--teal);
+  }
+  .spec-icon {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: var(--teal-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.75rem;
+    margin: 0 auto 1rem;
+    transition: background 0.25s, transform 0.25s;
+  }
+  .spec-card:hover .spec-icon { background: var(--teal); transform: scale(1.08); }
+  .spec-card h3 { font-size: 1rem; color: var(--navy); margin-bottom: 0.4rem; }
+  .spec-card p { font-size: 0.82rem; color: var(--gray-400); line-height: 1.4; }
+  .spec-btn {
+    display: inline-block;
+    margin-top: 1rem;
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem; font-weight: 600;
+    padding: 0.45rem 1.1rem;
+    border-radius: 50px; border: none; cursor: pointer;
+    transition: background 0.2s;
+  }
+  .spec-btn:hover { background: var(--teal); }
+
+  /* ── TRUST ── */
+  #trust { background: var(--navy); padding: 5rem 4%; }
+  .trust-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 2rem; max-width: 900px; margin: 0 auto; text-align: center;
+  }
+  .trust-card { padding: 1.5rem; }
+  .trust-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.8rem; font-weight: 700;
+    color: var(--teal); display: block;
+  }
+  .trust-label { color: rgba(255,255,255,0.65); font-size: 0.9rem; margin-top: 0.4rem; }
+
+  /* ── TESTIMONIALS ── */
+  #testimonials { background: var(--white); }
+  .testi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; max-width: 1100px; margin: 0 auto; }
+  .testi-card {
+    background: var(--off-white);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    border-left: 4px solid var(--teal);
+    transition: transform 0.2s;
+  }
+  .testi-card:hover { transform: translateY(-3px); }
+  .testi-quote { font-size: 0.97rem; color: var(--gray-600); font-style: italic; line-height: 1.7; margin-bottom: 1.25rem; }
+  .testi-author { display: flex; align-items: center; gap: 0.75rem; }
+  .testi-avatar {
+    width: 42px; height: 42px; border-radius: 50%;
+    background: var(--navy); color: var(--white);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.85rem;
+  }
+  .testi-name { font-weight: 600; font-size: 0.9rem; color: var(--navy); }
+  .testi-role { font-size: 0.8rem; color: var(--gray-400); }
+  .stars { color: var(--gold); font-size: 0.85rem; margin-bottom: 0.75rem; }
+
+  /* ── FOOTER ── */
+  footer { background: var(--gray-800); color: rgba(255,255,255,0.7); padding: 4rem 4% 2rem; }
+  .footer-inner { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; max-width: 1100px; margin: 0 auto; }
+  .footer-brand .nav-logo { display: block; margin-bottom: 0.75rem; }
+  .footer-brand p { font-size: 0.88rem; line-height: 1.7; max-width: 260px; }
+  .footer-col h4 { font-family: 'DM Sans', sans-serif; font-weight: 600; color: var(--white); font-size: 0.92rem; margin-bottom: 1rem; letter-spacing: 0.3px; }
+  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.55rem; }
+  .footer-col a { color: rgba(255,255,255,0.6); text-decoration: none; font-size: 0.88rem; transition: color 0.2s; }
+  .footer-col a:hover { color: var(--teal); }
+  .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); margin-top: 3rem; padding-top: 1.5rem; text-align: center; font-size: 0.82rem; color: rgba(255,255,255,0.35); max-width: 1100px; margin-left: auto; margin-right: auto; }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 2000;
+    background: rgba(11,31,58,0.7);
+    align-items: center; justify-content: center;
+    padding: 1rem;
+    backdrop-filter: blur(4px);
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    width: 100%; max-width: 560px;
+    max-height: 90vh; overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+    animation: modalIn 0.3s ease;
+    position: relative;
+  }
+  @keyframes modalIn { from { opacity:0; transform:scale(0.95) translateY(20px); } to { opacity:1; transform:scale(1) translateY(0); } }
+
+  .modal-close {
+    position: absolute; top: 1.25rem; right: 1.25rem;
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--gray-100); border: none; cursor: pointer;
+    font-size: 1.1rem; display: flex; align-items: center; justify-content: center;
+    color: var(--gray-600); transition: background 0.2s;
+  }
+  .modal-close:hover { background: var(--gray-200); }
+
+  .modal h2 { font-size: 1.5rem; color: var(--navy); margin-bottom: 0.4rem; }
+  .modal-sub { font-size: 0.9rem; color: var(--gray-400); margin-bottom: 2rem; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .form-group { margin-bottom: 1.25rem; }
+  .form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--navy); margin-bottom: 0.45rem; }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 0.7rem 1rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.92rem;
+    color: var(--text);
+    background: var(--white);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus { border-color: var(--teal); }
+  .form-group textarea { resize: vertical; min-height: 90px; }
+  #specialty-group { display: none; }
+
+  .btn-submit {
+    width: 100%; background: var(--navy);
+    color: var(--white); border: none;
+    border-radius: 50px; padding: 1rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem; font-weight: 600;
+    cursor: pointer; transition: background 0.2s, transform 0.15s;
+    margin-top: 0.5rem;
+  }
+  .btn-submit:hover { background: var(--teal); transform: translateY(-1px); }
+
+  .success-msg {
+    display: none; text-align: center; padding: 2rem 0;
+  }
+  .success-icon { font-size: 3rem; margin-bottom: 1rem; }
+  .success-msg h3 { font-size: 1.4rem; color: var(--navy); margin-bottom: 0.5rem; }
+  .success-msg p { color: var(--gray-600); font-size: 0.95rem; }
+
+  /* ── ACCESSIBILITY: FOCUS ── */
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: 2.5px solid var(--gold); outline-offset: 2px;
+  }
+
+  /* ── FORM ERRORS ── */
+  .form-group input.invalid, .form-group select.invalid, .form-group textarea.invalid { border-color: #E0453C; }
+  .field-error { display: none; color: #E0453C; font-size: 0.78rem; margin-top: 0.35rem; }
+  .field-error.show { display: block; }
+
+  /* ── CARE MODE TOGGLE ── */
+  .care-mode { display: flex; gap: 0.75rem; margin-bottom: 1.25rem; }
+  .care-mode-opt {
+    flex: 1; text-align: center; padding: 0.7rem 0.5rem;
+    border: 1.5px solid var(--gray-200); border-radius: var(--radius);
+    cursor: pointer; font-size: 0.85rem; font-weight: 600; color: var(--gray-600);
+    transition: border-color 0.2s, background 0.2s, color 0.2s;
+  }
+  .care-mode-opt.active { border-color: var(--teal); background: var(--teal-light); color: var(--teal-dark); }
+
+  /* ── DOCTORS ── */
+  #doctors { background: var(--white); }
+  .doctors-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 2rem; max-width: 1100px; margin: 0 auto; }
+  .doctor-card {
+    background: var(--off-white); border-radius: var(--radius-lg);
+    padding: 2rem 1.5rem; text-align: center; box-shadow: var(--shadow);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .doctor-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+  .doctor-avatar {
+    width: 84px; height: 84px; border-radius: 50%; margin: 0 auto 1rem;
+    background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+    color: var(--white); display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700;
+    border: 3px solid var(--teal-light);
+  }
+  .doctor-card h3 { font-size: 1.05rem; color: var(--navy); margin-bottom: 0.2rem; }
+  .doctor-role { color: var(--teal-dark); font-size: 0.82rem; font-weight: 600; margin-bottom: 0.6rem; }
+  .doctor-meta { font-size: 0.8rem; color: var(--gray-400); line-height: 1.6; }
+  .doctor-badge {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    font-size: 0.72rem; color: var(--teal-dark); background: var(--teal-light);
+    padding: 0.25rem 0.65rem; border-radius: 50px; margin-top: 0.75rem; font-weight: 600;
+  }
+
+  /* ── INSURANCE STRIP ── */
+  #insurance { background: var(--off-white); padding: 4rem 4%; }
+  .insurance-inner { max-width: 1000px; margin: 0 auto; text-align: center; }
+  .insurance-row {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem 1.25rem; margin-top: 2rem;
+  }
+  .insurance-pill {
+    background: var(--white); border: 1.5px solid var(--gray-200); border-radius: 50px;
+    padding: 0.6rem 1.4rem; font-size: 0.88rem; font-weight: 600; color: var(--navy);
+    box-shadow: var(--shadow);
+  }
+
+  /* ── FAQ ── */
+  #faq { background: var(--white); }
+  .faq-list { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 0.9rem; }
+  .faq-item { border: 1.5px solid var(--gray-200); border-radius: var(--radius); overflow: hidden; }
+  .faq-q {
+    width: 100%; text-align: left; background: var(--off-white); border: none; cursor: pointer;
+    padding: 1.1rem 1.4rem; display: flex; justify-content: space-between; align-items: center;
+    font-family: 'DM Sans', sans-serif; font-size: 0.98rem; font-weight: 600; color: var(--navy);
+  }
+  .faq-q .faq-icon { flex-shrink: 0; color: var(--teal); font-size: 1.2rem; transition: transform 0.25s; margin-left: 1rem; }
+  .faq-item.open .faq-q .faq-icon { transform: rotate(45deg); }
+  .faq-a {
+    max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s ease;
+    padding: 0 1.4rem; font-size: 0.9rem; color: var(--gray-600); background: var(--white);
+  }
+  .faq-item.open .faq-a { max-height: 240px; padding: 1rem 1.4rem 1.4rem; }
+
+  /* ── FLOATING CONTACT ── */
+  .float-actions { position: fixed; right: 1.5rem; bottom: 1.5rem; z-index: 900; display: flex; flex-direction: column; gap: 0.75rem; align-items: flex-end; }
+  .float-btn {
+    display: flex; align-items: center; gap: 0.6rem;
+    border: none; border-radius: 50px; cursor: pointer;
+    padding: 0.8rem 1.1rem; font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 0.85rem;
+    box-shadow: var(--shadow-lg); transition: transform 0.15s;
+  }
+  .float-btn:hover { transform: translateY(-2px); }
+  .float-btn.whatsapp { background: #25D366; color: var(--white); }
+  .float-btn.emergency { background: #E0453C; color: var(--white); }
+  .float-icon { font-size: 1.1rem; }
+  @media (max-width: 560px) {
+    .float-actions { right: 1rem; bottom: 1rem; }
+    .float-btn span.label { display: none; }
+    .float-btn { padding: 0.85rem; border-radius: 50%; }
+  }
+
+  /* ── NEWSLETTER ── */
+  .newsletter { max-width: 1100px; margin: 0 auto 3rem; background: var(--navy-mid); border-radius: var(--radius-lg); padding: 2.5rem; display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: center; justify-content: space-between; }
+  .newsletter h3 { color: var(--white); font-size: 1.2rem; margin-bottom: 0.3rem; }
+  .newsletter p { color: rgba(255,255,255,0.65); font-size: 0.88rem; }
+  .newsletter-form { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+  .newsletter-form input {
+    border: 1.5px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.08); color: var(--white);
+    border-radius: 50px; padding: 0.7rem 1.2rem; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; outline: none; min-width: 220px;
+  }
+  .newsletter-form input::placeholder { color: rgba(255,255,255,0.45); }
+  .newsletter-form button {
+    background: var(--teal); color: var(--white); border: none; border-radius: 50px;
+    padding: 0.7rem 1.5rem; font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 0.88rem; cursor: pointer;
+    transition: background 0.2s;
+  }
+  .newsletter-form button:hover { background: var(--teal-dark); }
+  .newsletter-note { font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-top: 0.5rem; width: 100%; }
+
+  /* ── SOCIAL ── */
+  .footer-social { display: flex; gap: 0.75rem; margin-top: 1.25rem; }
+  .footer-social a {
+    width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.08);
+    display: flex; align-items: center; justify-content: center; font-size: 1rem; text-decoration: none;
+  }
+  .footer-social a:hover { background: var(--teal); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .nav-links, .btn-nav { display: none; }
+    .nav-toggle { display: flex; }
+    nav.open .nav-links {
+      display: flex; flex-direction: column;
+      position: absolute; top: 100%; left: 0; right: 0;
+      background: var(--navy); padding: 1.5rem 4%;
+      gap: 1.25rem;
+    }
+    nav.open .btn-nav { display: block; width: fit-content; }
+    .general-inner { grid-template-columns: 1fr; }
+    .general-img { height: 220px; }
+    .footer-inner { grid-template-columns: 1fr 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+    .hero-stats { gap: 1.5rem; flex-wrap: wrap; }
+  }
+  @media (max-width: 480px) {
+    .footer-inner { grid-template-columns: 1fr; }
+    .modal { padding: 1.75rem 1.25rem; }
+  }
+  @media (max-width: 640px) {
+    .newsletter { flex-direction: column; align-items: stretch; text-align: center; }
+    .newsletter-form { justify-content: center; }
+    .newsletter-form input { min-width: 0; flex: 1; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav id="navbar">
+  <a href="#hero" class="nav-logo">Phil<span>med</span></a>
+  <ul class="nav-links">
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#general">General Doctor</a></li>
+    <li><a href="#specialists">Specialists</a></li>
+    <li><a href="#doctors">Our Doctors</a></li>
+    <li><a href="#testimonials">Reviews</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-account" id="navAccount">
+    <button class="nav-account-btn" onclick="openAccountModal('login')">Sign In</button>
+  </div>
+  <button class="btn-nav" onclick="openModal()">Book Appointment</button>
+  <div class="nav-toggle" onclick="toggleNav()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      Now Accepting New Patients
+    </div>
+    <h1 class="hero-title">
+      Expert Care,<br><em>When You Need It Most</em>
+    </h1>
+    <p class="hero-sub">
+      Connect with a general doctor or specialist — from gynaecology to cardiology — and book your consultation in minutes.
+    </p>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="openModal('general')">See a General Doctor</button>
+      <button class="btn-outline" onclick="scrollTo('#specialists')">Find a Specialist</button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num">500+</span><div class="stat-label">Qualified Doctors</div></div>
+      <div class="stat"><span class="stat-num">12</span><div class="stat-label">Specialties</div></div>
+      <div class="stat"><span class="stat-num">98%</span><div class="stat-label">Patient Satisfaction</div></div>
+      <div class="stat"><span class="stat-num">24/7</span><div class="stat-label">Availability</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ── -->
+<section id="how">
+  <div class="section-head">
+    <span class="section-label">Process</span>
+    <h2 class="section-title">How Philmed Works</h2>
+    <p class="section-sub">Getting care has never been simpler. Three steps stand between you and a qualified doctor.</p>
+  </div>
+  <div class="steps">
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <h3>Choose Your Care Type</h3>
+      <p>Decide whether you need a general practitioner consultation or a specialist in a specific medical field.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <h3>Select Your Doctor</h3>
+      <p>Browse available doctors and specialists. View their profiles, qualifications, and available time slots.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <h3>Book &amp; Confirm</h3>
+      <p>Submit your appointment request. Receive a confirmation and attend your consultation in person or virtually.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── GENERAL DOCTOR ── -->
+<section id="general">
+  <div class="general-inner">
+    <div class="general-img">
+      <div class="general-icon-wrap">🩺</div>
+    </div>
+    <div class="general-text">
+      <span class="section-label">General Practice</span>
+      <h2 class="section-title">See a General Doctor</h2>
+      <p class="section-sub">Our experienced GPs provide comprehensive primary care for all ages — from routine check-ups to managing chronic conditions and urgent health concerns.</p>
+      <ul class="perks">
+        <li class="perk"><span class="perk-dot"></span>Routine health check-ups and physicals</li>
+        <li class="perk"><span class="perk-dot"></span>Diagnosis and treatment of common illnesses</li>
+        <li class="perk"><span class="perk-dot"></span>Prescription management and renewals</li>
+        <li class="perk"><span class="perk-dot"></span>Referrals to specialists when needed</li>
+        <li class="perk"><span class="perk-dot"></span>Chronic disease monitoring and support</li>
+        <li class="perk"><span class="perk-dot"></span>Mental health and wellness assessments</li>
+      </ul>
+      <button class="btn-primary" onclick="openModal('general')">Book a GP Appointment</button>
+    </div>
+  </div>
+</section>
+
+<!-- ── SPECIALISTS ── -->
+<section id="specialists">
+  <div class="section-head">
+    <span class="section-label">Specialists</span>
+    <h2 class="section-title">Our Medical Specialists</h2>
+    <p class="section-sub">Request a consultation with a highly qualified specialist in your area of need.</p>
+  </div>
+  <div class="specialists-grid">
+
+    <div class="spec-card" onclick="openModal('Gynaecology')">
+      <div class="spec-icon">🌸</div>
+      <h3>Gynaecology</h3>
+      <p>Women's reproductive health, menstrual disorders, and hormonal care.</p>
+      <button class="spec-btn">Request</button>
+    </div>
+
+    <div class="spec-card" onclick="openModal('Obstetrics')">
+      <div class="spec-icon">🤱</div>
+      <h3>Obstetrics</h3>
+      <p>Prenatal care, pregnancy monitoring, and safe childbirth support.</p>
+      <button class="spec-btn">Request</button>
+    </div>
+
+    <div class="spec-card" onclick="openModal('Paediatrics')">
+      <div class="spec-icon">👶</div>
+      <h3>Paediatrics</h3>
+      <p>Comprehensive healthcare for infants, children, and adolescents.</p>
+      <button class="spec-btn">Request</button>
+    </div>
+
+    <div class="spec-card" onclick="openModal('Cardiology')">
+      <div class="spec-icon">❤️</div>
+      <h3>Cardiology</h3>
+      <p>Heart disease diagnosis, treatment, and cardiovascular prevention.</p>
+      <button class="spec-btn">Request</button>
+    </div>
+
+    <div class="spec-card" onclick="openModal('Pulmonology')">
+      <div class="spec-icon">🫁</div>
+      <h3>Pulmonology</h3>
+      <p>Respiratory conditions including asthma, COPD, and lung disease.</p>
+      <button class="spec-btn">Request</button>
+    </div>
+
+    <div class="spec-card" onclick="openModal('Neurology')">
+      <div class="spec-icon">🧠</div>
+      <h3>Neurology</h3>
+      <p>Brain, spine, and nervous system disorders and neurological care.</p>
+      <button class="spec-btn">Request</button>
+    </div>
+
+    <div class="spec-card" onclick="openModal('Orthopaedics')">
+      <div class="spec-icon">🦴</div>
+      <h3>Orthopaedics</h3>
+      <p>Bone, joint, muscle, and ligament injuries and treatments.</p>
+      <button class="spec-btn">Request</button>
+    </div>
+
+    <div class="spec-card" onclick="openModal('Dermatology')">
+      <div class="spec-icon">✨</div>
+      <h3>Dermatology</h3>
+      <p>Skin conditions, rashes, acne, and cosmetic dermatology services.</p>
+      <button class="spec-btn">Request</button>
+    </div>
+
+    <div class="spec-card" onclick="openModal('Ophthalmology')">
+      <div class="spec-icon">👁️</div>
+      <h3>Ophthalmology</h3>
+      <p>Eye health, vision testing, cataract, and retinal treatments.</p>
+      <button class="spec-btn">Request</button>
+    </div>
+
+    <div class="spec-card" onclick="openModal('ENT')">
+      <div class="spec-icon">👂</div>
+      <h3>ENT</h3>
+      <p>Ear, nose, and throat conditions, hearing loss, and sinus care.</p>
+      <button class="spec-btn">Request</button>
+    </div>
+
+    <div class="spec-card" onclick="openModal('Endocrinology')">
+      <div class="spec-icon">⚗️</div>
+      <h3>Endocrinology</h3>
+      <p>Diabetes, thyroid disorders, hormonal imbalances, and metabolism.</p>
+      <button class="spec-btn">Request</button>
+    </div>
+
+    <div class="spec-card" onclick="openModal('Oncology')">
+      <div class="spec-icon">🎗️</div>
+      <h3>Oncology</h3>
+      <p>Cancer screening, diagnosis support, and oncology referrals.</p>
+      <button class="spec-btn">Request</button>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── DOCTORS ── -->
+<section id="doctors">
+  <div class="section-head">
+    <span class="section-label">Our Team</span>
+    <h2 class="section-title">Meet a Few of Our Doctors</h2>
+    <p class="section-sub">Licensed, vetted, and experienced clinicians — a small sample of the 500+ available on Philmed.</p>
+  </div>
+  <div class="doctors-grid">
+    <div class="doctor-card">
+      <div class="doctor-avatar">DN</div>
+      <h3>Dr. David Njoroge</h3>
+      <div class="doctor-role">General Practitioner</div>
+      <div class="doctor-meta">MBChB, University of Nairobi<br/>14 years in primary care</div>
+      <div class="doctor-badge">✓ KMPDC Licensed</div>
+    </div>
+    <div class="doctor-card">
+      <div class="doctor-avatar">SW</div>
+      <h3>Dr. Sarah Wanjiru</h3>
+      <div class="doctor-role">Cardiologist</div>
+      <div class="doctor-meta">MMed Cardiology, Aga Khan University<br/>11 years in cardiac care</div>
+      <div class="doctor-badge">✓ KMPDC Licensed</div>
+    </div>
+    <div class="doctor-card">
+      <div class="doctor-avatar">FA</div>
+      <h3>Dr. Faith Achieng</h3>
+      <div class="doctor-role">Obstetrician &amp; Gynaecologist</div>
+      <div class="doctor-meta">MMed O&amp;G, Moi University<br/>9 years delivering care</div>
+      <div class="doctor-badge">✓ KMPDC Licensed</div>
+    </div>
+    <div class="doctor-card">
+      <div class="doctor-avatar">JM</div>
+      <h3>Dr. James Mutua</h3>
+      <div class="doctor-role">Paediatrician</div>
+      <div class="doctor-meta">MMed Paediatrics, UoN<br/>13 years treating children</div>
+      <div class="doctor-badge">✓ KMPDC Licensed</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TRUST ── -->
+<section id="trust">
+  <div class="section-head">
+    <span class="section-label" style="background:rgba(0,180,166,0.15); color:var(--teal);">By the Numbers</span>
+    <h2 class="section-title" style="color:var(--white);">Why Patients Choose Philmed</h2>
+  </div>
+  <div class="trust-grid">
+    <div class="trust-card">
+      <span class="trust-num">500+</span>
+      <div class="trust-label">Qualified Doctors &amp; Specialists</div>
+    </div>
+    <div class="trust-card">
+      <span class="trust-num">12</span>
+      <div class="trust-label">Medical Specialties Available</div>
+    </div>
+    <div class="trust-card">
+      <span class="trust-num">50k+</span>
+      <div class="trust-label">Patients Served</div>
+    </div>
+    <div class="trust-card">
+      <span class="trust-num">98%</span>
+      <div class="trust-label">Patient Satisfaction Rate</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TESTIMONIALS ── -->
+<section id="testimonials">
+  <div class="section-head">
+    <span class="section-label">Reviews</span>
+    <h2 class="section-title">What Our Patients Say</h2>
+    <p class="section-sub">Real experiences from real patients who trusted Philmed with their health.</p>
+  </div>
+  <div class="testi-grid">
+    <div class="testi-card">
+      <div class="stars">★★★★★</div>
+      <p class="testi-quote">"Booking a cardiologist had never been this easy. The process was smooth, and my specialist was incredibly thorough and reassuring. Philmed has completely changed how I approach healthcare."</p>
+      <div class="testi-author">
+        <div class="testi-avatar">AM</div>
+        <div>
+          <div class="testi-name">Amina Mwangi</div>
+          <div class="testi-role">Cardiology Patient</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="stars">★★★★★</div>
+      <p class="testi-quote">"As a first-time mother, finding a reliable obstetrician was nerve-wracking. Philmed made it effortless — I found a wonderful specialist within minutes and felt supported throughout my entire pregnancy."</p>
+      <div class="testi-author">
+        <div class="testi-avatar">JO</div>
+        <div>
+          <div class="testi-name">Joyce Odhiambo</div>
+          <div class="testi-role">Obstetrics Patient</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="stars">★★★★★</div>
+      <p class="testi-quote">"My son needed a paediatrician urgently and Philmed had an appointment confirmed within the hour. The doctor was kind, patient, and excellent with children. We won't use any other service."</p>
+      <div class="testi-author">
+        <div class="testi-avatar">DK</div>
+        <div>
+          <div class="testi-name">David Kamau</div>
+          <div class="testi-role">Paediatrics — Parent</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── INSURANCE ── -->
+<section id="insurance">
+  <div class="insurance-inner">
+    <span class="section-label">Payment &amp; Cover</span>
+    <h2 class="section-title">We Work With Your Insurance</h2>
+    <p class="section-sub" style="margin:0 auto;">Pay via NHIF, private insurance, or M-Pesa — whichever works for you.</p>
+    <div class="insurance-row">
+      <span class="insurance-pill">NHIF / SHA</span>
+      <span class="insurance-pill">Jubilee Health</span>
+      <span class="insurance-pill">AAR Insurance</span>
+      <span class="insurance-pill">CIC Insurance</span>
+      <span class="insurance-pill">M-Pesa</span>
+      <span class="insurance-pill">Cash &amp; Card</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── FAQ ── -->
+<section id="faq">
+  <div class="section-head">
+    <span class="section-label">FAQ</span>
+    <h2 class="section-title">Common Questions</h2>
+    <p class="section-sub">Answers to what patients usually ask before booking.</p>
+  </div>
+  <div class="faq-list">
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">How quickly can I get an appointment? <span class="faq-icon">+</span></button>
+      <div class="faq-a"><p>Most GP requests are confirmed within 30 minutes. Specialist availability varies, but we typically confirm within a few hours during working hours.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">Can I have a video consultation instead of visiting in person? <span class="faq-icon">+</span></button>
+      <div class="faq-a"><p>Yes — select "Video Consultation" when booking and your doctor will call you at your appointment time through a secure video link.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">Is my information kept confidential? <span class="faq-icon">+</span></button>
+      <div class="faq-a"><p>Yes. Your medical details are only shared with the clinician handling your case and are handled in line with data protection regulations.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">What if I need urgent or emergency care? <span class="faq-icon">+</span></button>
+      <div class="faq-a"><p>Philmed is for scheduled consultations, not emergencies. If you're facing a medical emergency, call the emergency line below or go to your nearest emergency room immediately.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">Do you accept NHIF/SHA or private insurance? <span class="faq-icon">+</span></button>
+      <div class="faq-a"><p>Yes, we work with NHIF/SHA and several private insurers, alongside M-Pesa and card payments. You can confirm your specific cover when booking.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer id="contact">
+  <div class="newsletter">
+    <div>
+      <h3>Health tips, once a month</h3>
+      <p>No spam — just practical wellness advice from our clinicians.</p>
+    </div>
+    <form class="newsletter-form" onsubmit="return subscribeNewsletter(event)">
+      <input type="email" id="newsletterEmail" placeholder="you@email.com" required aria-label="Email address"/>
+      <button type="submit">Subscribe</button>
+      <span class="newsletter-note" id="newsletterNote"></span>
+    </form>
+  </div>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="#hero" class="nav-logo">Phil<span>med</span></a>
+      <p>Connecting patients to quality healthcare — from general practitioners to the finest specialists across all medical disciplines.</p>
+      <div class="footer-social">
+        <a href="#" aria-label="Philmed on Facebook">📘</a>
+        <a href="#" aria-label="Philmed on Instagram">📷</a>
+        <a href="#" aria-label="Philmed on X / Twitter">🐦</a>
+        <a href="https://wa.me/254700000000" aria-label="Chat with Philmed on WhatsApp">💬</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Services</h4>
+      <ul>
+        <li><a href="#general">General Doctor</a></li>
+        <li><a href="#specialists">Find a Specialist</a></li>
+        <li><a href="#how">How It Works</a></li>
+        <li><a href="#" onclick="openModal()">Book Appointment</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Specialties</h4>
+      <ul>
+        <li><a href="#">Gynaecology</a></li>
+        <li><a href="#">Cardiology</a></li>
+        <li><a href="#">Paediatrics</a></li>
+        <li><a href="#">Neurology</a></li>
+        <li><a href="#">Pulmonology</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <ul>
+        <li><a href="tel:+254700000000">+254 700 000 000</a></li>
+        <li><a href="mailto:hello@philmed.health">hello@philmed.health</a></li>
+        <li><a href="#">Mombasa, Kenya</a></li>
+        <li><a href="#">Mon – Sun, 8am – 8pm</a></li>
+        <li><a href="tel:+254700111222" id="emergencyFooterLink" style="color:#ff9d97;">🚨 Emergency: <span id="emergencyFooterNumber">+254 700 111 222</span></a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 Philmed Health Services. All rights reserved. | Your Health, Our Priority.</p>
+  </div>
+</footer>
+
+<!-- ── FLOATING ACTIONS ── -->
+<div class="float-actions">
+  <a class="float-btn whatsapp" href="https://wa.me/254700000000" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+    <span class="float-icon">💬</span><span class="label">WhatsApp Us</span>
+  </a>
+  <a class="float-btn emergency" id="emergencyFloatBtn" href="tel:+254700111222" aria-label="Call emergency line">
+    <span class="float-icon">🚨</span><span class="label">Emergency Call</span>
+  </a>
+</div>
+
+<!-- ── APPOINTMENT MODAL ── -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeOnOverlay(event)">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="modal-close" onclick="closeModal()" aria-label="Close">✕</button>
+
+    <div id="formSection">
+      <h2 id="modalTitle">Book an Appointment</h2>
+      <p class="modal-sub">Fill in a few details and we'll confirm your booking shortly.</p>
+
+      <p class="booking-as" id="bookingAsLine" style="font-size:0.85rem; color:var(--gray-600); margin:-0.5rem 0 1.25rem;">
+        Booking as <strong id="bookingAsName">—</strong> (<span id="bookingAsEmail">—</span>)
+      </p>
+
+      <p class="form-api-error" id="formApiError"></p>
+
+      <div class="care-mode">
+        <div class="care-mode-opt active" id="modeInPerson" onclick="setConsultMode('in-person')">🏥 In-Person Visit</div>
+        <div class="care-mode-opt" id="modeVideo" onclick="setConsultMode('video')">💻 Video Consultation</div>
+      </div>
+
+      <div class="form-group">
+        <label for="careType">Type of Care *</label>
+        <select id="careType" onchange="toggleSpecialty()" required>
+          <option value="">— Select care type —</option>
+          <option value="general">General Doctor (GP)</option>
+          <option value="specialist">Medical Specialist</option>
+        </select>
+        <span class="field-error" id="err-careType">Please select a type of care.</span>
+      </div>
+
+      <div class="form-group" id="specialty-group">
+        <label for="specialty">Select Specialty *</label>
+        <select id="specialty" onchange="populateDoctorOptions()">
+          <option value="">— Choose a specialty —</option>
+          <option>Gynaecology</option>
+          <option>Obstetrics</option>
+          <option>Paediatrics</option>
+          <option>Cardiology</option>
+          <option>Pulmonology</option>
+          <option>Neurology</option>
+          <option>Orthopaedics</option>
+          <option>Dermatology</option>
+          <option>Ophthalmology</option>
+          <option>ENT (Ear, Nose &amp; Throat)</option>
+          <option>Endocrinology</option>
+          <option>Oncology</option>
+        </select>
+        <span class="field-error" id="err-specialty">Please choose a specialty.</span>
+      </div>
+
+      <div class="form-group">
+        <label for="doctorId">Choose Doctor *</label>
+        <select id="doctorId">
+          <option value="">— Select a type of care first —</option>
+        </select>
+        <span class="field-error" id="err-doctorId">Please choose a doctor.</span>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="date">Preferred Date *</label>
+          <input type="date" id="date" required />
+          <span class="field-error" id="err-date">Please select a preferred date.</span>
+        </div>
+        <div class="form-group">
+          <label for="time">Preferred Time *</label>
+          <select id="time">
+            <option value="">— Select time —</option>
+            <option>8:00 AM</option><option>9:00 AM</option><option>10:00 AM</option>
+            <option>11:00 AM</option><option>12:00 PM</option><option>1:00 PM</option>
+            <option>2:00 PM</option><option>3:00 PM</option><option>4:00 PM</option>
+            <option>5:00 PM</option><option>6:00 PM</option>
+          </select>
+          <span class="field-error" id="err-time">Please select a preferred time.</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="notes">Brief Symptoms / Notes</label>
+        <textarea id="notes" placeholder="Describe your symptoms or reason for visit (optional)…"></textarea>
+      </div>
+
+      <p style="font-size:0.78rem; color:var(--gray-400); margin:-0.5rem 0 1.25rem;">🔒 Your information is kept confidential and shared only with your care team.</p>
+
+      <button class="btn-submit" onclick="submitForm()">Confirm Appointment Request →</button>
+    </div>
+
+    <div class="success-msg" id="successMsg">
+      <div class="success-icon">✅</div>
+      <h3>Appointment Requested!</h3>
+      <p>Thank you! We've received your request and will contact you within 30 minutes to confirm your appointment.</p>
+      <p id="successModeNote" style="margin-top:0.5rem; color:var(--teal-dark); font-weight:600; font-size:0.88rem;"></p>
+      <br/>
+      <button class="btn-primary" onclick="closeModal()" style="margin: 0 auto; display: block; border-radius: 50px; padding: 0.75rem 2rem;">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── ACCOUNT MODAL (LOGIN / REGISTER) ── -->
+<div class="modal-overlay" id="accountOverlay" onclick="if(event.target===this) closeAccountModal()">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="accountModalTitle">
+    <button class="modal-close" onclick="closeAccountModal()" aria-label="Close">✕</button>
+    <h2 id="accountModalTitle">Welcome to Philmed</h2>
+    <p class="modal-sub" id="accountNote" style="display:none;"></p>
+
+    <div class="account-tabs">
+      <button class="tab-btn active" id="tabLogin" onclick="setAccountTab('login')">Sign In</button>
+      <button class="tab-btn" id="tabRegister" onclick="setAccountTab('register')">Create Account</button>
+    </div>
+
+    <p class="form-api-error" id="accountError"></p>
+
+    <div id="loginPane">
+      <div class="form-group">
+        <label for="loginEmail">Email Address</label>
+        <input type="email" id="loginEmail" placeholder="you@email.com" />
+      </div>
+      <div class="form-group">
+        <label for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" placeholder="••••••••" />
+      </div>
+      <button class="btn-submit" onclick="submitLogin()">Sign In →</button>
+    </div>
+
+    <div id="registerPane" style="display:none;">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="regFirstName">First Name</label>
+          <input type="text" id="regFirstName" placeholder="e.g. Amina" />
+        </div>
+        <div class="form-group">
+          <label for="regLastName">Last Name</label>
+          <input type="text" id="regLastName" placeholder="e.g. Mwangi" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="regEmail">Email Address</label>
+        <input type="email" id="regEmail" placeholder="you@email.com" />
+      </div>
+      <div class="form-group">
+        <label for="regPhone">Phone Number</label>
+        <input type="tel" id="regPhone" placeholder="+254 700 000 000" />
+      </div>
+      <div class="form-group">
+        <label for="regPassword">Password</label>
+        <input type="password" id="regPassword" placeholder="At least 6 characters" />
+      </div>
+      <button class="btn-submit" onclick="submitRegister()">Create Account →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MY APPOINTMENTS MODAL ── -->
+<div class="modal-overlay" id="appointmentsOverlay" onclick="if(event.target===this) closeAppointmentsModal()">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="apptModalTitle">
+    <button class="modal-close" onclick="closeAppointmentsModal()" aria-label="Close">✕</button>
+    <h2 id="apptModalTitle">My Appointments</h2>
+    <p class="modal-sub">Everything you've booked with Philmed.</p>
+    <div id="appointmentsList">
+      <p style="color:var(--gray-400); font-size:0.9rem;">Loading…</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ============================================================
+  // CONFIG — change this if your backend runs somewhere else
+  // ============================================================
+  const API_BASE = 'http://localhost:8080/api';
+
+  // ============================================================
+  // Storage: localStorage where available, safely falls back to
+  // an in-memory object if it's ever blocked (private browsing,
+  // a sandboxed preview, restrictive browser settings, etc.)
+  // ============================================================
+  const AppStorage = {
+    _mem: {},
+    get(key) {
+      try { return localStorage.getItem(key); } catch (e) { return this._mem[key] ?? null; }
+    },
+    set(key, value) {
+      try { localStorage.setItem(key, value); } catch (e) { this._mem[key] = value; }
+    },
+    remove(key) {
+      try { localStorage.removeItem(key); } catch (e) { delete this._mem[key]; }
+    }
+  };
+
+  let authToken = null;
+  let currentUser = null;       // { firstName, email }
+  let doctorsBySpecialty = {};  // "Cardiology" -> [{ id, fullName, yearsExperience, available }, ...]
+  let pendingModalType = null;  // remembers which booking modal to reopen after login
+  let consultMode = 'in-person';
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str == null ? '' : String(str);
+    return div.innerHTML;
+  }
+
+  // ============================================================
+  // API helper — attaches the JWT and normalizes error messages
+  // ============================================================
+  async function apiFetch(path, options = {}) {
+    const headers = Object.assign({ 'Content-Type': 'application/json' }, options.headers || {});
+    if (authToken) headers['Authorization'] = 'Bearer ' + authToken;
+
+    let res;
+    try {
+      res = await fetch(API_BASE + path, Object.assign({}, options, { headers }));
+    } catch (networkErr) {
+      throw new Error("Can't reach the server. Make sure the backend is running at " + API_BASE + ".");
+    }
+
+    let data = null;
+    try { data = await res.json(); } catch (e) { /* no JSON body */ }
+
+    if (!res.ok) {
+      let message = 'Request failed (' + res.status + ')';
+      if (data) {
+        if (typeof data === 'string') message = data;
+        else if (data.message) message = data.message;
+        else if (data.fieldErrors) message = Object.values(data.fieldErrors).join(' ');
+      }
+      throw new Error(message);
+    }
+    return data;
+  }
+
+  // ============================================================
+  // Auth session
+  // ============================================================
+  function restoreSession() {
+    const token = AppStorage.get('philmed_token');
+    const name = AppStorage.get('philmed_name');
+    const email = AppStorage.get('philmed_email');
+    if (token && name) {
+      authToken = token;
+      currentUser = { firstName: name, email: email };
+    }
+    updateAccountUI();
+  }
+
+  function setAuthSession(token, firstName, email) {
+    authToken = token;
+    currentUser = { firstName, email };
+    AppStorage.set('philmed_token', token);
+    AppStorage.set('philmed_name', firstName);
+    AppStorage.set('philmed_email', email);
+    updateAccountUI();
+  }
+
+  function clearAuthSession() {
+    authToken = null;
+    currentUser = null;
+    AppStorage.remove('philmed_token');
+    AppStorage.remove('philmed_name');
+    AppStorage.remove('philmed_email');
+    updateAccountUI();
+  }
+
+  function logout() {
+    clearAuthSession();
+  }
+
+  function updateAccountUI() {
+    const el = document.getElementById('navAccount');
+    if (!el) return;
+    if (currentUser) {
+      el.innerHTML =
+        '<span class="nav-hi">Hi, ' + escapeHtml(currentUser.firstName) + '</span>' +
+        '<a href="#" class="nav-account-link" onclick="openAppointmentsModal(); return false;">My Appointments</a>' +
+        '<a href="#" class="nav-account-link" onclick="logout(); return false;">Log Out</a>';
+    } else {
+      el.innerHTML = '<button class="nav-account-btn" onclick="openAccountModal(\'login\')">Sign In</button>';
+    }
+  }
+
+  // ============================================================
+  // Account modal (login / register)
+  // ============================================================
+  function openAccountModal(tab, message) {
+    document.getElementById('accountOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    setAccountTab(tab || 'login');
+    const note = document.getElementById('accountNote');
+    if (message) { note.textContent = message; note.style.display = 'block'; }
+    else { note.style.display = 'none'; }
+    const errEl = document.getElementById('accountError');
+    errEl.textContent = ''; errEl.style.display = 'none';
+  }
+
+  function closeAccountModal() {
+    document.getElementById('accountOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function setAccountTab(tab) {
+    document.getElementById('loginPane').style.display = tab === 'login' ? 'block' : 'none';
+    document.getElementById('registerPane').style.display = tab === 'register' ? 'block' : 'none';
+    document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+    document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
+  }
+
+  function showAccountError(msg) {
+    const el = document.getElementById('accountError');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  async function submitLogin() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    if (!email || !password) { showAccountError('Please enter your email and password.'); return; }
+    try {
+      const data = await apiFetch('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) });
+      setAuthSession(data.token, data.firstName, data.email);
+      closeAccountModal();
+      const reopen = pendingModalType;
+      pendingModalType = null;
+      if (reopen !== null) openModal(reopen);
+    } catch (e) {
+      showAccountError(e.message);
+    }
+  }
+
+  async function submitRegister() {
+    const firstName = document.getElementById('regFirstName').value.trim();
+    const lastName = document.getElementById('regLastName').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
+    const phone = document.getElementById('regPhone').value.trim();
+    const password = document.getElementById('regPassword').value;
+    if (!firstName || !lastName || !email || !phone || !password) {
+      showAccountError('Please fill in every field.'); return;
+    }
+    try {
+      const data = await apiFetch('/auth/register', {
+        method: 'POST',
+        body: JSON.stringify({ firstName, lastName, email, phone, password })
+      });
+      setAuthSession(data.token, data.firstName, data.email);
+      closeAccountModal();
+      const reopen = pendingModalType;
+      pendingModalType = null;
+      if (reopen !== null) openModal(reopen);
+    } catch (e) {
+      showAccountError(e.message);
+    }
+  }
+
+  // ============================================================
+  // Doctors — loaded from the backend; falls back to the sample
+  // cards already in the HTML if the API can't be reached.
+  // ============================================================
+  async function loadDoctors() {
+    try {
+      const doctors = await apiFetch('/doctors');
+      if (Array.isArray(doctors) && doctors.length > 0) {
+        renderDoctorCards(doctors);
+        buildDoctorIndex(doctors);
+      }
+    } catch (e) {
+      console.warn('Could not load doctors from the API — showing sample doctors instead.', e);
+    }
+  }
+
+  function renderDoctorCards(doctors) {
+    const grid = document.querySelector('#doctors .doctors-grid');
+    if (!grid) return;
+    grid.innerHTML = doctors.slice(0, 8).map(d => {
+      const initials = d.fullName
+        .replace(/^dr\.?\s*/i, '')
+        .split(' ')
+        .map(w => w[0])
+        .filter(Boolean)
+        .slice(0, 2)
+        .join('')
+        .toUpperCase();
+      return (
+        '<div class="doctor-card">' +
+          '<div class="doctor-avatar">' + escapeHtml(initials) + '</div>' +
+          '<h3>' + escapeHtml(d.fullName) + '</h3>' +
+          '<div class="doctor-role">' + escapeHtml(d.specialty) + '</div>' +
+          '<div class="doctor-meta">' + escapeHtml(d.qualification) + '<br/>' + escapeHtml(d.yearsExperience) + ' years of experience</div>' +
+          '<div class="doctor-badge">✓ KMPDC Licensed' + (d.available ? '' : ' · Currently Unavailable') + '</div>' +
+        '</div>'
+      );
+    }).join('');
+  }
+
+  function buildDoctorIndex(doctors) {
+    doctorsBySpecialty = {};
+    doctors.forEach(d => {
+      if (!d.available) return;
+      if (!doctorsBySpecialty[d.specialty]) doctorsBySpecialty[d.specialty] = [];
+      doctorsBySpecialty[d.specialty].push(d);
+    });
+  }
+
+  function populateDoctorOptions() {
+    const careType = document.getElementById('careType').value;
+    const specialty = document.getElementById('specialty').value;
+    const doctorSelect = document.getElementById('doctorId');
+
+    let list = [];
+    if (careType === 'general') {
+      list = doctorsBySpecialty['General Practitioner'] || [];
+    } else if (careType === 'specialist' && specialty) {
+      list = doctorsBySpecialty[specialty] || [];
+    }
+
+    if (!careType) {
+      doctorSelect.innerHTML = '<option value="">— Select a type of care first —</option>';
+      return;
+    }
+    if (careType === 'specialist' && !specialty) {
+      doctorSelect.innerHTML = '<option value="">— Select a specialty first —</option>';
+      return;
+    }
+    if (list.length === 0) {
+      doctorSelect.innerHTML = '<option value="">— No doctors available right now —</option>';
+      return;
+    }
+    doctorSelect.innerHTML = '<option value="">— Choose a doctor —</option>' +
+      list.map(d => '<option value="' + d.id + '">' + escapeHtml(d.fullName) + ' (' + d.yearsExperience + ' yrs)</option>').join('');
+  }
+
+  // ============================================================
+  // Emergency contacts — loaded from the backend; falls back to
+  // the numbers already in the HTML if unreachable.
+  // ============================================================
+  async function loadEmergencyContacts() {
+    try {
+      const contacts = await apiFetch('/emergency/contacts');
+      if (Array.isArray(contacts) && contacts.length > 0) {
+        const primary = contacts[0];
+        const floatBtn = document.getElementById('emergencyFloatBtn');
+        const footerLink = document.getElementById('emergencyFooterLink');
+        const footerNumber = document.getElementById('emergencyFooterNumber');
+        if (floatBtn) floatBtn.href = 'tel:' + primary.phone;
+        if (footerLink) footerLink.href = 'tel:' + primary.phone;
+        if (footerNumber) footerNumber.textContent = primary.phone;
+      }
+    } catch (e) {
+      console.warn('Could not load emergency contacts — showing default number.', e);
+    }
+  }
+
+  // ============================================================
+  // My Appointments modal
+  // ============================================================
+  function openAppointmentsModal() {
+    document.getElementById('appointmentsOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    loadMyAppointments();
+  }
+
+  function closeAppointmentsModal() {
+    document.getElementById('appointmentsOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  async function loadMyAppointments() {
+    const container = document.getElementById('appointmentsList');
+    container.innerHTML = '<p style="color:var(--gray-400); font-size:0.9rem;">Loading…</p>';
+    try {
+      const list = await apiFetch('/appointments/my');
+      if (!Array.isArray(list) || list.length === 0) {
+        container.innerHTML = '<p style="color:var(--gray-400); font-size:0.9rem;">You have no appointments yet.</p>';
+        return;
+      }
+      container.innerHTML = list.map(a => {
+        const statusClass = 'appt-status-' + a.status.toLowerCase();
+        const mode = a.consultMode === 'VIDEO' ? 'Video' : 'In-Person';
+        return (
+          '<div class="appt-row">' +
+            '<div>' +
+              '<strong>' + escapeHtml(a.doctorName) + '</strong> — ' + escapeHtml(a.specialty) + '<br/>' +
+              '<span style="color:var(--gray-400); font-size:0.85rem;">' +
+                escapeHtml(a.appointmentDate) + ' at ' + escapeHtml(a.appointmentTime) + ' · ' + mode +
+              '</span>' +
+            '</div>' +
+            '<span class="appt-status ' + statusClass + '">' + escapeHtml(a.status) + '</span>' +
+          '</div>'
+        );
+      }).join('');
+    } catch (e) {
+      container.innerHTML = '<p style="color:#B3261E; font-size:0.9rem;">' + escapeHtml(e.message) + '</p>';
+    }
+  }
+
+  // ============================================================
+  // Navbar
+  // ============================================================
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 50);
+  });
+
+  function toggleNav() {
+    navbar.classList.toggle('open');
+  }
+
+  function scrollTo(selector) {
+    document.querySelector(selector).scrollIntoView({ behavior: 'smooth' });
+  }
+
+  // ============================================================
+  // Booking modal
+  // ============================================================
+  function openModal(type) {
+    if (!authToken) {
+      pendingModalType = type === undefined ? '' : type;
+      openAccountModal('login', 'Please sign in or create a free account to book an appointment.');
+      return;
+    }
+
+    const overlay = document.getElementById('modalOverlay');
+    const careType = document.getElementById('careType');
+    const specialty = document.getElementById('specialty');
+
+    document.getElementById('formSection').style.display = 'block';
+    document.getElementById('successMsg').style.display = 'none';
+
+    if (type === 'general') {
+      careType.value = 'general';
+      document.getElementById('specialty-group').style.display = 'none';
+    } else if (type && type !== 'general') {
+      careType.value = 'specialist';
+      document.getElementById('specialty-group').style.display = 'block';
+      const options = specialty.options;
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].text.toLowerCase().includes(type.toLowerCase())) {
+          specialty.selectedIndex = i;
+          break;
+        }
+      }
+    } else {
+      careType.value = '';
+      document.getElementById('specialty-group').style.display = 'none';
+    }
+
+    if (currentUser) {
+      document.getElementById('bookingAsName').textContent = currentUser.firstName;
+      document.getElementById('bookingAsEmail').textContent = currentUser.email || '';
+    }
+
+    populateDoctorOptions();
+
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('date').min = today;
+  }
+
+  function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+    document.getElementById('careType').value = '';
+    document.getElementById('specialty').value = '';
+    document.getElementById('doctorId').innerHTML = '<option value="">— Select a type of care first —</option>';
+    document.getElementById('date').value = '';
+    document.getElementById('time').value = '';
+    document.getElementById('notes').value = '';
+    document.getElementById('specialty-group').style.display = 'none';
+    setConsultMode('in-person');
+    clearFieldErrors();
+    const apiErr = document.getElementById('formApiError');
+    apiErr.textContent = ''; apiErr.style.display = 'none';
+  }
+
+  function closeOnOverlay(e) {
+    if (e.target === document.getElementById('modalOverlay')) closeModal();
+  }
+
+  function toggleSpecialty() {
+    const val = document.getElementById('careType').value;
+    document.getElementById('specialty-group').style.display = val === 'specialist' ? 'block' : 'none';
+    populateDoctorOptions();
+  }
+
+  function setConsultMode(mode) {
+    consultMode = mode;
+    document.getElementById('modeInPerson').classList.toggle('active', mode === 'in-person');
+    document.getElementById('modeVideo').classList.toggle('active', mode === 'video');
+  }
+
+  function clearFieldErrors() {
+    document.querySelectorAll('.field-error').forEach(el => el.classList.remove('show'));
+    document.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
+  }
+
+  function markInvalid(fieldId) {
+    const field = document.getElementById(fieldId);
+    const err = document.getElementById('err-' + fieldId);
+    if (field) field.classList.add('invalid');
+    if (err) err.classList.add('show');
+  }
+
+  function showFormError(msg) {
+    const el = document.getElementById('formApiError');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  // Form validation & submission — now actually books against the backend
+  async function submitForm() {
+    clearFieldErrors();
+    const apiErr = document.getElementById('formApiError');
+    apiErr.textContent = ''; apiErr.style.display = 'none';
+
+    const careType = document.getElementById('careType').value;
+    const specialty = document.getElementById('specialty').value;
+    const doctorId = document.getElementById('doctorId').value;
+    const date = document.getElementById('date').value;
+    const time = document.getElementById('time').value;
+    const notes = document.getElementById('notes').value.trim();
+
+    let valid = true;
+    if (!careType) { markInvalid('careType'); valid = false; }
+    if (careType === 'specialist' && !specialty) { markInvalid('specialty'); valid = false; }
+    if (!doctorId) { markInvalid('doctorId'); valid = false; }
+    if (!date) { markInvalid('date'); valid = false; }
+    if (!time) { markInvalid('time'); valid = false; }
+
+    if (!valid) {
+      const firstInvalid = document.querySelector('.invalid');
+      if (firstInvalid) firstInvalid.focus();
+      return;
+    }
+
+    const submitBtn = document.querySelector('#formSection .btn-submit');
+    const originalLabel = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Booking…';
+
+    try {
+      await apiFetch('/appointments', {
+        method: 'POST',
+        body: JSON.stringify({
+          doctorId: Number(doctorId),
+          careType: careType === 'general' ? 'GENERAL' : 'SPECIALIST',
+          consultMode: consultMode === 'video' ? 'VIDEO' : 'IN_PERSON',
+          appointmentDate: date,
+          appointmentTime: time,
+          notes: notes
+        })
+      });
+
+      document.getElementById('formSection').style.display = 'none';
+      document.getElementById('successMsg').style.display = 'block';
+      const modeNote = document.getElementById('successModeNote');
+      if (modeNote) {
+        modeNote.textContent = consultMode === 'video'
+          ? "We'll send you a secure video link before your appointment."
+          : "Please arrive 10 minutes early for your in-person visit.";
+      }
+    } catch (e) {
+      showFormError(e.message);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalLabel;
+    }
+  }
+
+  // FAQ accordion
+  function toggleFaq(btn) {
+    const item = btn.closest('.faq-item');
+    const wasOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+    if (!wasOpen) item.classList.add('open');
+  }
+
+  // Newsletter signup (front-end only demo — wire to a real endpoint if you add one)
+  function subscribeNewsletter(e) {
+    e.preventDefault();
+    const email = document.getElementById('newsletterEmail').value.trim();
+    const note = document.getElementById('newsletterNote');
+    if (email && email.includes('@')) {
+      note.textContent = "Thanks — you're subscribed!";
+      document.getElementById('newsletterEmail').value = '';
+    } else {
+      note.textContent = 'Please enter a valid email address.';
+    }
+    return false;
+  }
+
+  // Escape key closes whichever modal is open
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeModal();
+      closeAccountModal();
+      closeAppointmentsModal();
+    }
+  });
+
+  // ============================================================
+  // Init
+  // ============================================================
+  document.addEventListener('DOMContentLoaded', () => {
+    restoreSession();
+    loadDoctors();
+    loadEmergencyContacts();
+  });
+</script>
+</body>
+</html>
